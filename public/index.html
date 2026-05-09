@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Gnobu Operational Decision Engine</title>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 {
+      color: #38bdf8;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: #cbd5e1;
+    }
+
+    .card {
+      background: #111827;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      color: #94a3b8;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #1e293b;
+      color: white;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #0ea5e9;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    pre {
+      background: black;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      color: #22c55e;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Gnobu</h1>
+
+  <p>
+    Operational Decision Infrastructure for Distributed Systems
+  </p>
+
+  <div class="card">
+
+    <label>Service</label>
+
+    <select id="service">
+      <option value="payment-service">payment-service</option>
+      <option value="auth-service">auth-service</option>
+      <option value="user-service">user-service</option>
+    </select>
+
+    <label>Error Type</label>
+
+    <select id="error">
+      <option value="critical">critical</option>
+      <option value="failure">failure</option>
+      <option value="ok">ok</option>
+    </select>
+
+    <label>Confidence</label>
+
+    <input
+      type="number"
+      id="confidence"
+      value="0.30"
+      step="0.01"
+      min="0"
+      max="1"
+    />
+
+    <button onclick="sendSignal()">
+      SEND SIGNAL
+    </button>
+
+    <pre id="output">
+Waiting for signal...
+    </pre>
+
+  </div>
+
+  <script>
+
+    async function sendSignal() {
+
+      const service =
+        document.getElementById("service").value;
+
+      const error =
+        document.getElementById("error").value;
+
+      const confidence =
+        parseFloat(
+          document.getElementById("confidence").value
+        );
+
+      const output =
+        document.getElementById("output");
+
+      output.textContent =
+        "🚨 Sending signal to Gnobu...";
+
+      try {
+
+        const response = await fetch("/signal", {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+
+            api_key: "gnobu_live_123",
+
+            service,
+            error,
+            confidence
+
+          })
+
+        });
+
+        const data = await response.json();
+
+        output.textContent =
+          JSON.stringify(data, null, 2);
+
+      } catch (err) {
+
+        output.textContent =
+          "❌ Error: " + err.message;
+      }
+    }
+
+  </script>
+
+</body>
+</html>

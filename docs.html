@@ -1,0 +1,29 @@
+```html id="d1"
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gnobu API Docs</title>
+</head>
+<body>
+  <h1>Gnobu API</h1>
+
+  <h2>POST /signal</h2>
+  <pre>
+{
+  "api_key": "gnobu_live_123",
+  "service": "payment-service",
+  "error": "critical",
+  "confidence": 0.21
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "decision": "BLOCK",
+  "action": "HOLD_TRANSACTION",
+  "risk": "HIGH"
+}
+  </pre>
+</body>
+</html>

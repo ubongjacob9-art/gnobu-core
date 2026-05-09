@@ -1,0 +1,14 @@
+modules = ["nodejs-20"]
+[agent]
+expertMode = true
+
+[[ports]]
+localPort = 3000
+
+[nix]
+packages = ["lsof"]
+
+[deployment]
+deploymentTarget = "cloudrun"
+
+run = "npm start"

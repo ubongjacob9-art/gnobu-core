@@ -1,0 +1,26 @@
+{
+  "auth-service": {
+    "trust": 0.19,
+    "events": 28
+  },
+  "payment-service": {
+    "trust": 0.42,
+    "events": 3
+  },
+  "tenant_alpha": {
+    "auth-service": {
+      "trust": 0.44,
+      "events": 2
+    },
+    "payment-service": {
+      "trust": 0.4,
+      "events": 4
+    }
+  },
+  "tenant_beta": {
+    "auth-service": {
+      "trust": 0.54,
+      "events": 2
+    }
+  }
+}
