@@ -1,0 +1,13 @@
+# Node modules
+node_modules/
+
+# Runtime data (DO NOT COMMIT)
+events.json
+incidents.json
+memory.json
+
+# Logs
+*.log
+
+# Replit
+.replit.nix
