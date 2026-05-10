@@ -338,7 +338,7 @@ app.post("/signal", (req, res) => {
 app.get("/", (req, res) => {
   res.json({
     status: "GNOBU OPERATIONAL DECISION CORE 🚀",
-    endpoints: ["/signal", "/events", "/incidents", "/usage", "/docs"],
+    endpoints: ["/signal", "/events", "/incidents", "/usage", "/docs", "/dashboard"],
     totalEvents: events.length,
     totalIncidents: incidents.length
   });
@@ -346,6 +346,10 @@ app.get("/", (req, res) => {
 
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/docs.html");
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(__dirname + "/public/dashboard.html");
 });
 
 app.get("/events", (req, res) => {
@@ -360,7 +364,11 @@ app.get("/incidents", (req, res) => {
 
 app.get("/usage", (req, res) => {
   const { api_key } = req.query;
-  res.json({ api_key, requests: usage[api_key] || 0, limit: RATE_LIMIT });
+  res.json({
+    api_key,
+    requests: usage[api_key] || 0,
+    limit: RATE_LIMIT
+  });
 });
 
 // =========================

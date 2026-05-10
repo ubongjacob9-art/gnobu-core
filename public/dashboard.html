@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Gnobu Incident Dashboard</title>
+
+  <style>
+
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #38bdf8;
+    }
+
+    .card {
+      background: #111827;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    .risk-HIGH {
+      color: #ef4444;
+    }
+
+    .risk-MEDIUM {
+      color: #f59e0b;
+    }
+
+    .risk-LOW {
+      color: #22c55e;
+    }
+
+    .status-ACTION_REQUIRED {
+      color: #ef4444;
+    }
+
+    .status-NORMAL {
+      color: #22c55e;
+    }
+
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      background: #0ea5e9;
+      border: none;
+      color: white;
+      border-radius: 8px;
+    }
+
+    .timeline-item {
+  border-left: 2px solid #38bdf8;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+.timeline-time {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.timeline-action {
+  color: #f59e0b;
+}
+
+    #detailPanel {
+  margin-top: 20px;
+}
+
+#detailContent {
+  margin-top: 10px;
+  line-height: 1.8;
+  color: #cbd5e1;
+  word-break: break-word;
+}
+    
+  </style>
+</head>
+
+<body>
+
+  <h1>🚨 Gnobu Incident Dashboard</h1>
+
+  <button onclick="manualRefresh()">
+  Refresh Events
+  </button>
+
+  <div class="card">
+
+    <h3>📊 Live System State</h3>
+
+    <p>
+      Total Events:
+      <span id="totalEvents">0</span>
+    </p>
+
+    <p>
+      High Risk Events:
+      <span id="highRisk">0</span>
+    </p>
+
+    <p>
+      Action Required:
+      <span id="actionRequired">0</span>
+    </p>
+
+  </div>
+
+  <div class="card">
+  <h3>⏱ Incident Timeline</h3>
+  <div id="timeline"></div>
+</div>
+
+  <div class="card" id="detailPanel">
+
+  <h3>🧠 Incident Detail Panel</h3>
+
+  <div id="detailContent">
+    Click an incident to inspect operational reasoning.
+  </div>
+
+  </div>
+  
+<div id="feed"></div>
+
+  <script>
+
+    async function manualRefresh() {
+
+  const feed =
+    document.getElementById("feed");
+
+  feed.innerHTML =
+    "<div class='card'>🔄 Refreshing events...</div>";
+
+  await loadEvents();
+
+    }
+    
+    async function loadEvents() {
+
+      const res = await fetch(
+        "/events?api_key=gnobu_live_123"
+      );
+
+      const data = await res.json();
+
+ const timeline = document.getElementById("timeline");
+timeline.innerHTML = "";
+      document.getElementById("totalEvents").innerText =
+        data.length;
+
+      document.getElementById("highRisk").innerText =
+        data.filter(
+          e => e.risk === "HIGH"
+        ).length;
+
+      document.getElementById("actionRequired").innerText =
+        data.filter(
+          e =>
+            e.status === "ACTION_REQUIRED" ||
+            e.decision === "BLOCK"
+        ).length;
+
+      const feed =
+        document.getElementById("feed");
+
+      feed.innerHTML = "";
+
+      data
+        .slice(-10)
+        .reverse()
+        .forEach(event => {
+const t = document.createElement("div");
+
+t.className = "timeline-item";
+
+t.innerHTML = `
+  <div class="timeline-time">
+    ${event.timestamp || event.event_id}
+  </div>
+
+  <div>
+    <b>${event.service}</b>
+    → ${event.decision || "ALLOW"}
+  </div>
+
+  <div class="timeline-action">
+    ${event.action || "NO_ACTION"}
+  </div>
+`;
+
+timeline.appendChild(t);
+
+          const div =
+  document.createElement("div");
+
+div.className = "card";
+
+div.style.cursor = "pointer";
+
+div.onclick = () => {
+
+  const detail =
+    document.getElementById("detailContent");
+
+  detail.innerHTML = `
+
+    <b>Trace ID:</b>
+    ${event.trace_id || "N/A"}
+    <br/>
+
+    <b>Tenant:</b>
+    ${event.tenant || "unknown"}
+    <br/>
+
+    <b>Service:</b>
+    ${event.service || "unknown"}
+    <br/>
+
+    <b>Owner:</b>
+    ${event.owner || "unassigned"}
+    <br/>
+
+    <b>Recommended Team:</b>
+    ${event.recommended_team || "general"}
+    <br/>
+
+    <b>Decision:</b>
+    ${event.decision || "ALLOW"}
+    <br/>
+
+    <b>Action:</b>
+    ${event.action || "NO_ACTION"}
+    <br/>
+
+    <b>Policy:</b>
+    ${event.policy || "NO_POLICY"}
+    <br/>
+
+    <b>Risk:</b>
+    ${event.risk || "LOW"}
+    <br/>
+
+    <b>Confidence:</b>
+    ${event.confidence || "0.00"}
+    <br/>
+
+    <b>Trust:</b>
+    ${event.trust || "0.00"}
+    <br/>
+
+    <b>Status:</b>
+    ${event.status || "NORMAL"}
+    <br/>
+
+    <b>Escalation:</b>
+    ${event.escalation || "none"}
+    <br/>
+
+    <b>Reason:</b>
+    ${event.reason || "NORMAL_FLOW"}
+    <br/>
+
+    <b>Deployment Actor:</b>
+    ${event.last_deployment_by || "unknown"}
+    <br/>
+
+    <b>Deployment Window:</b>
+    ${event.deployment_window || "unknown"}
+    <br/>
+
+    <b>Timestamp:</b>
+    ${event.timestamp || "unknown"}
+
+  `;
+};
+
+div.innerHTML = `
+
+            <b>Service:</b>
+            ${event.service || "unknown"}
+            <br/>
+
+            <b>Decision:</b>
+            ${
+              event.decision ||
+              (
+                event.risk === "HIGH"
+                  ? "BLOCK"
+                  : "ALLOW"
+              )
+            }
+            <br/>
+
+            <b>Action:</b>
+            ${
+              event.action ||
+              event.incident?.action_taken ||
+              (
+                event.risk === "HIGH"
+                  ? "HOLD_TRANSACTION"
+                  : "NO_ACTION"
+              )
+            }
+            <br/>
+
+            <b>Status:</b>
+            <span class="status-${event.status || "NORMAL"}">
+              ${event.status || "NORMAL"}
+            </span>
+            <br/>
+
+            <b>Risk:</b>
+            <span class="risk-${event.risk || "LOW"}">
+              ${event.risk || "LOW"}
+            </span>
+            <br/>
+
+            <b>Confidence:</b>
+            ${event.confidence || "0.00"}
+            <br/>
+
+            <b>Time:</b>
+            ${event.timestamp || event.event_id || "unknown"}
+
+          `;
+
+          feed.appendChild(div);
+
+        });
+
+    }
+
+    loadEvents();
+
+    // auto refresh every 5 seconds
+    setInterval(() => {
+      loadEvents();
+    }, 5000);
+
+  </script>
+
+</body>
+</html>
